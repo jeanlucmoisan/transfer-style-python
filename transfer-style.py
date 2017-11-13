@@ -13,7 +13,7 @@ import subprocess
 import numpy
 
 BATCH_SIZE = 4
-DEVICE = '/gpu:0'
+DEVICE = '/cpu:0'
 
 
 def from_pipe(opts):
@@ -54,7 +54,7 @@ def from_pipe(opts):
     pipe_out = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=None, stderr=None)
     g = tf.Graph()
     soft_config = tf.ConfigProto(allow_soft_placement=True)
-    soft_config.gpu_options.allow_growth = True
+    #soft_config.gpu_options.allow_growth = True
 
     with g.as_default(), g.device(opts.device), \
          tf.Session(config=soft_config) as sess:
@@ -123,7 +123,7 @@ def from_pipe(opts):
         del pipe_out
 
 # get img_shape
-def ffwd(data_in, paths_out, checkpoint_dir, device_t='/gpu:0', batch_size=4):
+def ffwd(data_in, paths_out, checkpoint_dir, device_t='/cpu:0', batch_size=4):
     assert len(paths_out) > 0
     is_paths = type(data_in[0]) == str
     if is_paths:
@@ -137,7 +137,7 @@ def ffwd(data_in, paths_out, checkpoint_dir, device_t='/gpu:0', batch_size=4):
     batch_size = min(len(paths_out), batch_size)
     curr_num = 0
     soft_config = tf.ConfigProto(allow_soft_placement=True)
-    soft_config.gpu_options.allow_growth = True
+    #soft_config.gpu_options.allow_growth = True
     with g.as_default(), g.device(device_t), \
             tf.Session(config=soft_config) as sess:
         batch_shape = (batch_size,) + img_shape
